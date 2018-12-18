@@ -32,6 +32,8 @@ Chip8::Chip8(std::string fileName)
 
     //Clear display
     this->clearDisplay();
+    
+    draw_flag = 1;
     //Set stack pointer to -1 (stack empty)
     stack_ptr = -1;
     //Set cycle count to 0;
@@ -248,6 +250,8 @@ The interpreter reads n bytes from memory, starting at the address stored in I. 
         PC += 2;
         return;
     }
+    draw_flag = 1;
+    
     uint8_t sprite[n];
     for(int i = 0; i < n; i++){
         sprite[i] = memory[I + i];

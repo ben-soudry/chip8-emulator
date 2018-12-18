@@ -14,7 +14,7 @@ public:
     uint16_t PC;
     uint16_t stack[16]; 
     int stack_ptr; //top of stack - -1 means empty stack
-    
+     
     //Registers (16 8-bit and 1 16-bit)
     uint8_t V[16];
     uint16_t I;
@@ -32,6 +32,9 @@ public:
     //How many cycles between timer decrements
     static const uint32_t tick_cycles = 100;
     
+    //When set, the screen has been updated 
+    bool draw_flag;
+
     void initRegisters();
     void emulateCycle(); 
     void runInstruction(uint16_t instr);
