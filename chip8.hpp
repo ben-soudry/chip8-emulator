@@ -26,6 +26,7 @@ public:
     static const uint8_t height = 32;
 
     bool display[height][width];
+    
     bool keyboard[16];    
     
     uint32_t cycle_count;
@@ -34,6 +35,9 @@ public:
     
     //When set, the screen has been updated 
     bool draw_flag;
+
+    void setKey(uint8_t key , bool press);
+        
 
     void initRegisters();
     void emulateCycle(); 

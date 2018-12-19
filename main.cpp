@@ -2,12 +2,14 @@
 #include <string>
 #include <stdio.h>
 #include "chip8.hpp"
-#include <time.h>
+#include <ctime>
 
 const int displayWidth = 640;
 const int displayHeight = 320;
+double clockSpeed = 100.0; //Clock speed in Hz 
 
-void getKeyboardInput(sf::RenderWindow& window, Chip8 chip8){
+
+void getKeyboardInput(sf::RenderWindow& window, Chip8& chip8){
     sf::Event event;
     while (window.pollEvent(event))
     {
@@ -15,10 +17,27 @@ void getKeyboardInput(sf::RenderWindow& window, Chip8 chip8){
             window.close();
         }
     }
+    //Keyboard mapping:
+    chip8.setKey(0x1, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad1));
+    chip8.setKey(0x2, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad2));
+    chip8.setKey(0x3, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad3));
+    chip8.setKey(0xC, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad4));
+    chip8.setKey(0x4, sf::Keyboard::isKeyPressed(sf::Keyboard::Q));
+    chip8.setKey(0x5, sf::Keyboard::isKeyPressed(sf::Keyboard::W));
+    chip8.setKey(0x6, sf::Keyboard::isKeyPressed(sf::Keyboard::E));
+    chip8.setKey(0xD, sf::Keyboard::isKeyPressed(sf::Keyboard::R));
+    chip8.setKey(0x7, sf::Keyboard::isKeyPressed(sf::Keyboard::A));
+    chip8.setKey(0x8, sf::Keyboard::isKeyPressed(sf::Keyboard::S));
+    chip8.setKey(0x9, sf::Keyboard::isKeyPressed(sf::Keyboard::D));
+    chip8.setKey(0xE, sf::Keyboard::isKeyPressed(sf::Keyboard::F));
+    chip8.setKey(0xA, sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+    chip8.setKey(0x0, sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+    chip8.setKey(0xB, sf::Keyboard::isKeyPressed(sf::Keyboard::C));
+    chip8.setKey(0xF, sf::Keyboard::isKeyPressed(sf::Keyboard::V));
+
 }
 
 void updateDisplay(sf::RenderWindow& window, Chip8& chip8){
-
     window.clear();
 
     float pixelWidth = (float) displayWidth / (float) chip8.width;
@@ -35,36 +54,51 @@ void updateDisplay(sf::RenderWindow& window, Chip8& chip8){
             }
         }
     }
+    
     chip8.draw_flag = 0;
     window.display();
 }
 
-
-int main()
-        
+int main(int argc, char** argv)
 {
-    //Chip8 chip8("roms/games/Airplane.ch8");
+    if(argc != 3){
+        printf("Usage ./chip8-app <ROM File> <Clock Speed (Hz)> \n");
+        return 0;
+    } 
+    std::string rom_name(argv[1]);
+    clockSpeed = atof(argv[2]);
+
+    Chip8 chip8(rom_name);
     
-    Chip8 chip8("roms/games/Space\ Invaders\ \[David\ Winter\].ch8");
+    printf("Printing ROM.... \n");
     chip8.printRom();
+    printf("End of ROM print \n");
 
     sf::RenderWindow window(sf::VideoMode(displayWidth, displayHeight), "Chip8 Display");
+       
     //window.setFramerateLimit(60);
     //window.setVerticalSyncEnabled(true);
   
-    struct timespec start, finish;
-    double elapsed;
-
-
+    std::clock_t start;
+    double duration;
 
     while (window.isOpen())
     {
-        //Get user input:
-        getKeyboardInput(window, chip8);
-
-        //Emulate cycle:
         do {
+            //Emulate cycle:
+            start = std::clock();
+
+            //Get user input:
+            getKeyboardInput(window, chip8);        
+            
             chip8.emulateCycle();
+            
+            while(true){
+                duration=( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+                if(duration > 1/(clockSpeed)){
+                    break;
+                }
+            }
         } while(chip8.draw_flag == 0);
 
         /*
@@ -75,7 +109,6 @@ int main()
         //Draw digit:
         chip8.runInstruction(0xD005);
         */
-
 
         //draw
         updateDisplay(window, chip8);

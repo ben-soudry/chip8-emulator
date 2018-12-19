@@ -49,13 +49,19 @@ void Chip8::initRegisters(){
     I = 0;
 }
 
-
+void Chip8::setKey(uint8_t key, bool press){
+    /*if(this->keyboard[key] != press){
+        printf("Key %d set to %d \n", key, press);
+    }*/
+    this->keyboard[key] = press;
+}
 
 void Chip8::emulateCycle(){
     uint8_t high_byte = memory[PC];
     uint8_t low_byte = memory[PC+1];
     uint16_t instr = ((uint16_t) high_byte << 8)  | (uint16_t) low_byte;
-
+    printf("0x%X ", PC); 
+    
     this->runInstruction(instr);
 
     cycle_count++;
@@ -204,7 +210,7 @@ void Chip8::SUBN(uint8_t Vx, uint8_t Vy){
 
 
 void Chip8::SHL(uint8_t Vx){
-    uint8_t MSB = V[Vx] & (1<<7);
+    uint8_t MSB = (V[Vx] & (1<<7))>>7;
     V[0xF] = MSB;
     V[Vx] = V[Vx] >> 1; 
     PC += 2; 
@@ -319,16 +325,19 @@ void Chip8::SKNP(uint8_t Vx){
 }
 
 void Chip8::LDK(uint8_t Vx){
-    //Block until we get keyboard input
-    if(V[Vx] > 15){
-        printf("ERROR: Invalid Keyboard Index \n");
-        PC += 2;
+    //Block until we get keyboard input, store in V[Vx]
+    int foundKey = -1;
+    for(int i = 0; i < 16; i++){
+        if(this->keyboard[i] == true){
+            foundKey = i;
+            break;
+        }
     }
-    if(keyboard[V[Vx]]){
+    if(foundKey != -1){
         //Only increment program counter when the keyboard is pressed
+        V[Vx] = (uint8_t) foundKey; 
         PC += 2;
     } 
-
     //Otherwise stay on this command.
 }
 void Chip8::LDDT(uint8_t Vx){
