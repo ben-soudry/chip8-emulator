@@ -112,7 +112,7 @@ void Chip8::JP1(uint16_t addr){
 void Chip8::CALL(uint16_t addr){
     //Call a subroutine
     stack_ptr++;
-    stack[stack_ptr] = PC;
+    stack[stack_ptr] = PC + 2;
     PC = addr;
 }
 void Chip8::SE1(uint8_t Vx, uint8_t byte){
