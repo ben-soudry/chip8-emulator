@@ -1,4 +1,4 @@
-LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system
+LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -pthread
 
 all: chip8-app chip8-test
 

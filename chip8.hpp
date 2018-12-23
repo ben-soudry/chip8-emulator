@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>  
 #include <string>
+#include <mutex>
 
 class Chip8
 {
@@ -19,6 +20,7 @@ public:
     uint8_t V[16];
     uint16_t I;
     //Special registers (Delay Timer and Sound Timer)
+    std::mutex DT_ST_Mutex;  //Allows safe asyncronous reads/writes to DT and ST
     uint8_t DT;
     uint8_t ST;
     
@@ -29,20 +31,16 @@ public:
     
     bool keyboard[16];    
     
-    uint32_t cycle_count;
-    //How many cycles between timer decrements
-    static const uint32_t tick_cycles = 100;
     
     //When set, the screen has been updated 
     bool draw_flag;
-
-    void setKey(uint8_t key , bool press);
-        
-
-    void initRegisters();
+    
+    
+    void setKey(uint8_t key, bool press);
+    void tickClock(); 
+    bool isSoundOn();
     void emulateCycle(); 
     void runInstruction(uint16_t instr);
-    void clearDisplay();
  
     void printRom();
     void printInstruction(uint16_t addr, uint16_t instr);
@@ -71,6 +69,9 @@ public:
     
 
 private:
+    void initRegisters();
+    void clearDisplay();
+    
     //Chip8 instruction implementations
     //See Chip8 documentation for details:
     //http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.4
@@ -100,6 +101,7 @@ private:
     void SKP (uint8_t Vx);
     void SKNP(uint8_t Vx);
     void LDDT(uint8_t Vx);
+    void LDDT2(uint8_t Vx);
     void LDK (uint8_t Vx);
     void LDST(uint8_t Vx);
     void ADDI(uint8_t Vx);

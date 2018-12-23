@@ -36,8 +36,6 @@ Chip8::Chip8(std::string fileName)
     draw_flag = 1;
     //Set stack pointer to -1 (stack empty)
     stack_ptr = -1;
-    //Set cycle count to 0;
-    cycle_count = 0;
 }
 
 void Chip8::initRegisters(){
@@ -50,11 +48,23 @@ void Chip8::initRegisters(){
 }
 
 void Chip8::setKey(uint8_t key, bool press){
-    /*if(this->keyboard[key] != press){
-        printf("Key %d set to %d \n", key, press);
-    }*/
     this->keyboard[key] = press;
 }
+
+void Chip8::tickClock(){
+    DT_ST_Mutex.lock();
+    if(DT > 0){
+        DT--;
+    }
+    if(ST > 0) {
+        ST--;
+    }
+    DT_ST_Mutex.unlock();
+}
+bool Chip8::isSoundOn(){
+    return (ST > 0);
+}
+
 
 void Chip8::emulateCycle(){
     uint8_t high_byte = memory[PC];
@@ -63,16 +73,6 @@ void Chip8::emulateCycle(){
     printf("0x%X ", PC); 
     
     this->runInstruction(instr);
-
-    cycle_count++;
-    if(cycle_count % tick_cycles == 0){
-        if(DT > 0){
-            DT--;
-        }
-        if(ST > 0) {
-            ST--;
-        }
-    }
 } 
 
 void Chip8::clearDisplay(){
@@ -88,6 +88,7 @@ void Chip8::clearDisplay(){
 void Chip8::CLS(){
     //Clear the display
     this->clearDisplay();
+    //Set cycle count to 0;
     PC += 2;
 }
 
@@ -340,16 +341,31 @@ void Chip8::LDK(uint8_t Vx){
     } 
     //Otherwise stay on this command.
 }
+
 void Chip8::LDDT(uint8_t Vx){
-    //Set Delay Timer
+    //Set Vx to Delay Timer - thread safe
+    DT_ST_Mutex.lock();
+    V[Vx] = DT;
+    DT_ST_Mutex.unlock();
+    PC += 2;
+}
+
+void Chip8::LDDT2(uint8_t Vx){
+    //Set Delay Timer to Vx - thread safe
+    DT_ST_Mutex.lock();
     DT = V[Vx];
+    DT_ST_Mutex.unlock();
     PC += 2;
 }
+
 void Chip8::LDST(uint8_t Vx){
-    //Set Sound Timer
+    //Set Sound Timer to Vx - thread safe
+    DT_ST_Mutex.lock();
     ST = V[Vx];
+    DT_ST_Mutex.unlock();
     PC += 2;
 }
+
 void Chip8::ADDI(uint8_t Vx){
     I = I + V[Vx];
     PC += 2;
@@ -517,7 +533,7 @@ void Chip8::runInstruction(uint16_t instr) {
             switch(kk){
                 case 0x07:
                     printf(" LD V%X, DT \n", word1);
-                    this->LDDT(x);
+                    this->LDDT(x); 
                     break;
                 case 0x0A:
                     printf(" LD V%X, K \n", word1);
@@ -525,7 +541,7 @@ void Chip8::runInstruction(uint16_t instr) {
                     break;
                 case 0x15:
                     printf(" LD DT, V%X \n", word1);
-                    this->LDDT(x);
+                    this->LDDT2(x);
                     break;
                 case 0x18:
                     printf(" LD ST, V%X \n", word1);
