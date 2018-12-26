@@ -361,6 +361,7 @@ void Chip8::LDDT2(uint8_t Vx){
 void Chip8::LDST(uint8_t Vx){
     //Set Sound Timer to Vx - thread safe
     DT_ST_Mutex.lock();
+    printf("LDST: %d \n", V[Vx]);
     ST = V[Vx];
     DT_ST_Mutex.unlock();
     PC += 2;
@@ -606,8 +607,8 @@ void Chip8::printInstruction(uint16_t addr, uint16_t instr) {
         uint8_t word1 = (uint8_t)((instr >> 8) & 0xF);
         uint8_t word2 = (uint8_t)((instr >> 4) & 0xF);
         uint8_t word3 = (uint8_t)(instr & 0xF);
-        uint8_t low_byte = word2 << 4 | word3;
- 
+        uint8_t low_byte = (uint8_t)(instr & 0xFF);
+    
         switch(word0) {
             case 0:
                 if(instr == 0x00E0){

@@ -1,17 +1,21 @@
+#include "chip8.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <stdio.h>
-#include "chip8.hpp"
 #include <ctime>
 #include <thread> 
 #include <chrono> 
+#include <SFML/Audio.hpp>
+#include <cmath>
 
-const int displayWidth = 640;
-const int displayHeight = 320;
+
+const int displayWidth = 1280;
+const int displayHeight = 640;
 double clockSpeed = 100.0; //Clock speed in Hz 
 double timerSpeed = 60.0; //Speed in Hz at which timer registers (DT & ST) decrement
 int timer_ms = (int)((1/timerSpeed)*1000);
-
+sf::SoundBuffer Buffer;
+sf::Sound Sound;
 
 void getKeyboardInput(sf::RenderWindow& window, Chip8* chip8){
     sf::Event event;
@@ -58,7 +62,6 @@ void updateDisplay(sf::RenderWindow& window, Chip8* chip8){
             }
         }
     }
-    
     chip8->draw_flag = 0;
     window.display();
 }
@@ -73,6 +76,34 @@ void timerRegistersManager(Chip8* chip8) //Can't do this, must pass by value.
     
 }
 
+void initSound(){
+    //Sound code adapted from https://github.com/SFML/SFML/wiki/Tutorial:-Play-Sine-Wave
+    const unsigned SAMPLES = 44100;
+    const unsigned SAMPLE_RATE = 44100;
+    
+    sf::Int16 raw[SAMPLES];
+    
+    const double AMPLITUDE = 30000;
+    const double TWO_PI = 6.28318;
+    const double increment = 440.0/SAMPLES;
+    double x = 0;
+
+    for(unsigned i = 0; i < SAMPLES; i++) {
+        raw[i] = AMPLITUDE * sin(x*TWO_PI);
+        x += increment;
+    }
+
+    if(!Buffer.loadFromSamples(raw, SAMPLES, 1, SAMPLE_RATE)){
+        printf("Failed to load audio \n");
+    }
+    
+    Sound.setBuffer(Buffer);
+    Sound.setLoop(true);
+    
+    Sound.play(); 
+    sf::sleep(sf::milliseconds(10));
+    Sound.stop();
+}
 
 int main(int argc, char** argv)
 {
@@ -83,22 +114,30 @@ int main(int argc, char** argv)
     std::string rom_name(argv[1]);
     clockSpeed = atof(argv[2]);
 
+    
     Chip8* chip8 = new Chip8(rom_name);
     
+    //Print out ROM
     printf("Printing ROM.... \n");
     chip8->printRom();
     printf("End of ROM print \n");
 
-    sf::RenderWindow window(sf::VideoMode(displayWidth, displayHeight), "Chip8 Display");
+    //Create Display window with rom title
+    char title[200];
+    snprintf(title, 200, "Chip8: %s", rom_name.c_str());
+    sf::RenderWindow window(sf::VideoMode(displayWidth, displayHeight), title);
        
-    //window.setFramerateLimit(60);
-    //window.setVerticalSyncEnabled(true);
-    
+    //Start up a thread for updating the time registers at 60Hz
     std::thread timerRegistersThread(timerRegistersManager, chip8);    
+
+    //initialize sound object
+    initSound();
+    bool soundOn = false;   
+    
 
     std::clock_t start;
     double duration;
-
+    
     while (window.isOpen())
     {
         do {
@@ -109,7 +148,17 @@ int main(int argc, char** argv)
             getKeyboardInput(window, chip8);        
                 
             chip8->emulateCycle();
-            
+            if(soundOn == false && chip8->isSoundOn()){
+                Sound.play();
+                printf("Sound On! \n");
+                soundOn = true;
+            } else if(soundOn == true && !chip8->isSoundOn()){
+                Sound.stop();
+                printf("Sound Off! \n");
+                soundOn = false;
+            }
+
+
             while(true){
                 duration=( std::clock() - start ) / (double) CLOCKS_PER_SEC;
                 if(duration > 1/(clockSpeed)){
