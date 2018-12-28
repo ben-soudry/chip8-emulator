@@ -26,10 +26,10 @@ void getKeyboardInput(sf::RenderWindow& window, Chip8* chip8){
         }
     }
     //Keyboard mapping:
-    chip8->setKey(0x1, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad1));
-    chip8->setKey(0x2, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad2));
-    chip8->setKey(0x3, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad3));
-    chip8->setKey(0xC, sf::Keyboard::isKeyPressed(sf::Keyboard::Numpad4));
+    chip8->setKey(0x1, sf::Keyboard::isKeyPressed(sf::Keyboard::Num1));
+    chip8->setKey(0x2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2));
+    chip8->setKey(0x3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3));
+    chip8->setKey(0xC, sf::Keyboard::isKeyPressed(sf::Keyboard::Num4));
     chip8->setKey(0x4, sf::Keyboard::isKeyPressed(sf::Keyboard::Q));
     chip8->setKey(0x5, sf::Keyboard::isKeyPressed(sf::Keyboard::W));
     chip8->setKey(0x6, sf::Keyboard::isKeyPressed(sf::Keyboard::E));
