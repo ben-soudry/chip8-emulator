@@ -1,6 +1,9 @@
 LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -pthread
 
-all: chip8-app chip8-test
+all: chip8-app chip8-test chip8-wasm
+
+chip8-wasm: chip8.cpp chip8_binding.cpp 
+	emcc --bind -o chip8.js chip8_binding.cpp chip8.cpp --embed-file roms/
 
 chip8-app: main.o chip8.o
 	g++ -std=c++11 main.o chip8.o -o chip8-app $(LDLIBS)

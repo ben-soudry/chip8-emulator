@@ -26,7 +26,9 @@ Chip8::Chip8(std::string fileName)
     }
     //Load Digits into memory
     memcpy(memory, digits, 80);
-    
+
+    printf("ROM Loaded! \n");
+
     //initialize registers
     this->initRegisters();
 
