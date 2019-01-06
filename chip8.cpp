@@ -63,10 +63,14 @@ void Chip8::tickClock(){
     }
     DT_ST_Mutex.unlock();
 }
+
 bool Chip8::isSoundOn(){
     return (ST > 0);
 }
 
+bool Chip8::displayOnAt(uint8_t row, uint8_t col){
+    return display[row][col];
+}
 
 void Chip8::emulateCycle(){
     uint8_t high_byte = memory[PC];

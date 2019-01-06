@@ -39,6 +39,7 @@ public:
     void setKey(uint8_t key, bool press);
     void tickClock(); 
     bool isSoundOn();
+    bool displayOnAt(uint8_t row, uint8_t col);
     void emulateCycle(); 
     void runInstruction(uint16_t instr);
  
