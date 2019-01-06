@@ -1,6 +1,92 @@
 <!doctype html>
-</html>
-  <canvas id="Chip8 Display" width="640" height="320"></canvas>
-  <script src="main.js?1517"></script>
-  <script src="chip8.js?1517"></script>
+<link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+<style>
+:root {
+  --terminal-color: #00ff00;
+}
+h2 {
+  font-family: 'VT323', monospace;
+  font-size: 48px;
+  line-height: 22px;
+  color: var(--terminal-color);
+  text-align: center;
+}
+body {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  line-height: 22px;
+  color: var(--terminal-color);
+  background-color: black;
+  width: 648px;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.display {
+  border: 2px solid var(--terminal-color);
+  padding: 1px;
+  margin-bottom: 0px;  
+  text-align: center; 
+}
+select {
+  font-family: 'VT323', monospace;
+  font-size: 30px;
+  width: 100px;
+  border: 2px solid var(--terminal-color);
+  color: var(--terminal-color);
+  background-color: black;
+  outline: none;
+  margin-bottom: 10px;
+}
+.slider {
+  -webkit-appearance: none;
+  width: 200px;
+  height: 25px;
+  border: 2px solid var(--terminal-color);
+  background: black;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: var(--terminal-color);
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: var(--terminal-color);
+  cursor: pointer;
+}
+
+</style>
+
+<html>
+<body>
+  <h2>CHIP-8 Emulator - Ben Soudry</h2>
+    
+  <div class = 'display'>
+    <canvas id="Chip8 Display" width="640px" height="320px"></canvas>
+  </div>
+  <script src="main.js?1543"></script>
+  <script src="chip8.js?1543"></script>
+
+  <select id='roms'></select>
+
+   <div class="slidecontainer">
+      <p>Emulation Speed: <span id="output"></span> Hz</p>
+      <input type="range" min="10" max="80" value="45" id="slider" class="slider">
+   </div>
+</body>
 </html>

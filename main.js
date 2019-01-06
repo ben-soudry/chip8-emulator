@@ -2,16 +2,27 @@ var Module = {
     onRuntimeInitialized: main
 };
 
+var emulationSpeed = 450; // Emulation Speed in Hz, rate to call emulateCycle
+var clockSpeed = 60; // Clock Speed in Hz, rate to call tickClock
+
 
 function main(){
-    var chip8 = new Module.Chip8("roms/games/Connect\ 4\ \[David\ Winter\].ch8");
+    //var chip8 = new Module.Chip8("roms/games/Connect\ 4\ \[David\ Winter\].ch8");
     //var chip8 = new Module.Chip8("roms/games/Missile\ \[David\ Winter\].ch8");
-    console.log('isSoundOn result: ' + chip8.isSoundOn());
+    //var chip8 = new Module.Chip8("roms/games/Rush\ Hour\ \[Hap\,\ 2006\].ch8");
+    var chip8 = new Module.Chip8("roms/games/Space Invaders [David Winter].ch8");
     
     var canvas = document.getElementById('Chip8 Display');
-    
-    var clockSpeed = 100; // Clock Speed in Hz, rate to call emulateCycle
-    var timeStep = (1/clockSpeed)*1000;
+    var slider = document.getElementById('slider');
+    var speedOutput = document.getElementById('output');     
+    speedOutput.innerHTML = 450;
+    slider.oninput = function() {
+        speedOutput.innerHTML = 10*this.value;
+    }
+ 
+    var timeStep = (1/emulationSpeed)*1000;
+    var clockTimeStep = (1/clockSpeed)*1000;
+
     var lastTimestamp = 0;
 
     //Start key listeners:
@@ -19,25 +30,40 @@ function main(){
     var keyUpListener = keyListener(false);
 
     document.addEventListener("keydown", keyDownListener, true);
+    var timeStep = (1/emulationSpeed)*1000;
     document.addEventListener("keyup", keyUpListener, true);
-    //document.addEventListener("keydown", function(event){console.warn("***KeyDown!!")});    
 
     //Start main loop:
     requestAnimationFrame(mainLoop);
-    
+    //Start clock
+    setInterval(clockUpdate, clockTimeStep); 
+
     function mainLoop(timestamp) {
         var delta = timestamp - lastTimestamp;
         //console.log("Loop! Delta: " + delta);
         lastTimestamp = timestamp;
-        while(delta >= timeStep){
-            //console.log("Update!?!?");
+        var emulateTimeRemaining = delta;
+        while(emulateTimeRemaining >= timeStep){
             chip8.emulateCycle();
-            delta -= timeStep;
+            emulateTimeRemaining -= timeStep;
         }
+        /*var clockTimeRemaining = delta;
+        while(clockTimeRemaining >= clockTimeStep){
+            chip8.tickClock();
+            clockTimeRemaining -= clockTimeStep;
+        }*/
         drawScreen(chip8, canvas);  
         requestAnimationFrame(mainLoop);
+        //Update timestep
+        emulationSpeed = speedOutput.innerHTML;
+        timeStep = (1/emulationSpeed)*1000;
     }
-            
+    
+    function clockUpdate(){
+        console.warn("Clock Update");
+        chip8.tickClock();
+    }
+    
     function keyListener(isKeyDown) {
         //Returns the correct key listener for keyup, keydown events,
         //depending on what is specified by isKeyDown,

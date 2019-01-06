@@ -66,7 +66,7 @@ void updateDisplay(sf::RenderWindow& window, Chip8* chip8){
     window.display();
 }
 
-void timerRegistersManager(Chip8* chip8) //Can't do this, must pass by value.
+void timerRegistersManager(Chip8* chip8) 
 {
     while(true){
         chip8->tickClock();
