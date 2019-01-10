@@ -1,37 +1,43 @@
 <!doctype html>
 <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+
 <style>
 :root {
   --terminal-color: #00ff00;
 }
 h2 {
   font-family: 'VT323', monospace;
-  font-size: 48px;
+  font-size: 50px;
   line-height: 22px;
   color: var(--terminal-color);
   text-align: center;
 }
 body {
-  font-family: 'VT323', monospace;
+  font-family: 'Press Start 2P', cursive;
   font-size: 20px;
   line-height: 22px;
   color: var(--terminal-color);
   background-color: black;
-  width: 648px;
+  width: 1000px;
   text-align: center;
   margin-left:auto;
   margin-right:auto;
 }
 .display {
   border: 2px solid var(--terminal-color);
+  width: 648px;
   padding: 1px;
-  margin-bottom: 0px;  
-  text-align: center; 
+  margin-bottom: 0px; 
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto; 
 }
 select {
-  font-family: 'VT323', monospace;
-  font-size: 30px;
-  width: 100px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 20px;
+  width: 200px;
   border: 2px solid var(--terminal-color);
   color: var(--terminal-color);
   background-color: black;
@@ -45,7 +51,7 @@ select {
   border: 2px solid var(--terminal-color);
   background: black;
   outline: none;
-  opacity: 0.7;
+  opacity: 1;
   -webkit-transition: .2s;
   transition: opacity .2s;
 }
@@ -74,15 +80,22 @@ select {
 
 <html>
 <body>
-  <h2>CHIP-8 Emulator - Ben Soudry</h2>
+  <h2>CHIP-8 EMULATOR - BEN SOUDRY</h2>
     
   <div class = 'display'>
     <canvas id="Chip8 Display" width="640px" height="320px"></canvas>
   </div>
-  <script src="main.js?1543"></script>
-  <script src="chip8.js?1543"></script>
+  <script src="main.js?1579"></script>
+  <script src="chip8.js?1579"></script>
 
-  <select id='roms'></select>
+  <select id='romsDropdown'>
+    <option value="roms/games/Breakout (Brix hack) [David Winter, 1997].ch8")>BREAKOUT</option>
+    <option value="roms/games/Connect 4 [David Winter].ch8")>CONNECT4</option>
+    <option value="roms/games/Missile [David Winter].ch8">MISSILE</option>
+    <option value="roms/games/Rush Hour [Hap, 2006].ch8">RUSHHOUR</option>
+    <option value="roms/games/Space Invaders [David Winter].ch8">SPACEINVADERS</option>
+    <option value="roms/games/Tetris [Fran Dachille, 1991].ch8">TETRIS</option>
+  </select>
 
    <div class="slidecontainer">
       <p>Emulation Speed: <span id="output"></span> Hz</p>

@@ -6,10 +6,19 @@ constexpr uint8_t Chip8::digits[80];
 Chip8::Chip8(std::string fileName)
         : m_fileName(fileName), PC(0x200)
 {    
+    this->loadROM(fileName);
+}
+
+void Chip8::loadROM(std::string fileName){
+    //Loads a new ROM, resets emulator
+    printf("c++: Loading new ROM \n");
+    m_fileName = fileName;
+    PC = 0x200;
+    
     //Load ROM into memory
-    FILE* fp = fopen(m_fileName.c_str(), "r");
+    FILE* fp = fopen(fileName.c_str(), "r");
     if(fp == NULL){
-        printf("Unable to read rom! \n");
+        printf("c++: Unable to read rom! \n");
         return;
     } else {
         unsigned short addr = 0x200; //ROM start location
@@ -27,19 +36,18 @@ Chip8::Chip8(std::string fileName)
     //Load Digits into memory
     memcpy(memory, digits, 80);
 
-    printf("ROM Loaded! \n");
-
     //initialize registers
     this->initRegisters();
 
     //Clear display
     this->clearDisplay();
-    
+
     draw_flag = 1;
     //Set stack pointer to -1 (stack empty)
     stack_ptr = -1;
+    
+    printf("c++: ROM Loaded! \n");
 }
-
 void Chip8::initRegisters(){
     for(int i=0; i < 16; i++){
         V[i] = 0;

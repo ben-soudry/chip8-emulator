@@ -8,7 +8,6 @@ class Chip8
 {
 public:
     Chip8(std::string fileName);
-    void loadROM();
     std::string m_fileName;
     //Program memory, program counter and stack.
     uint8_t memory[4096];
@@ -35,7 +34,7 @@ public:
     //When set, the screen has been updated 
     bool draw_flag;
     
-    
+     
     void setKey(uint8_t key, bool press);
     void tickClock(); 
     bool isSoundOn();
@@ -45,7 +44,10 @@ public:
  
     void printRom();
     void printInstruction(uint16_t addr, uint16_t instr);
-
+    void loadROM(std::string fileName);
+       
+    void clearDisplay();
+ 
     //Memory locations of digits 0-F
     static constexpr uint16_t digitLocations[16] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75};
     
@@ -71,7 +73,6 @@ public:
 
 private:
     void initRegisters();
-    void clearDisplay();
     
     //Chip8 instruction implementations
     //See Chip8 documentation for details:

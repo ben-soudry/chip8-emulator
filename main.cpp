@@ -17,6 +17,27 @@ int timer_ms = (int)((1/timerSpeed)*1000);
 sf::SoundBuffer Buffer;
 sf::Sound Sound;
 
+void updateDisplay(sf::RenderWindow& window, Chip8* chip8){
+    window.clear();
+
+    float pixelWidth = (float) displayWidth / (float) chip8->width;
+    float pixelHeight = (float) displayHeight / (float) chip8->height;
+    bool noPixels = true; 
+    for(int row = 0; row < chip8->height; row++){
+        for(int col = 0; col < chip8->width; col++){
+            if(chip8->display[row][col]){
+                noPixels = false;
+                sf::RectangleShape pixel(sf::Vector2f(pixelWidth, pixelHeight));
+                pixel.setFillColor(sf::Color::Green);
+                pixel.setPosition(col*pixelWidth, row*pixelHeight);                
+                window.draw(pixel);
+            }
+        }
+    }
+    chip8->draw_flag = 0;
+    window.display();
+}
+
 void getKeyboardInput(sf::RenderWindow& window, Chip8* chip8){
     sf::Event event;
     while (window.pollEvent(event))
@@ -42,28 +63,10 @@ void getKeyboardInput(sf::RenderWindow& window, Chip8* chip8){
     chip8->setKey(0x0, sf::Keyboard::isKeyPressed(sf::Keyboard::X));
     chip8->setKey(0xB, sf::Keyboard::isKeyPressed(sf::Keyboard::C));
     chip8->setKey(0xF, sf::Keyboard::isKeyPressed(sf::Keyboard::V));
-
-}
-
-void updateDisplay(sf::RenderWindow& window, Chip8* chip8){
-    window.clear();
-
-    float pixelWidth = (float) displayWidth / (float) chip8->width;
-    float pixelHeight = (float) displayHeight / (float) chip8->height;
-    bool noPixels = true; 
-    for(int row = 0; row < chip8->height; row++){
-        for(int col = 0; col < chip8->width; col++){
-            if(chip8->display[row][col]){
-                noPixels = false;
-                sf::RectangleShape pixel(sf::Vector2f(pixelWidth, pixelHeight));
-                pixel.setFillColor(sf::Color::Green);
-                pixel.setPosition(col*pixelWidth, row*pixelHeight);                
-                window.draw(pixel);
-            }
-        }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::T)){
+        chip8->loadROM("roms/games/Tetris\ \[Fran\ Dachille\,\ 1991\].ch8");
+        updateDisplay(window, chip8);
     }
-    chip8->draw_flag = 0;
-    window.display();
 }
 
 void timerRegistersManager(Chip8* chip8) 
@@ -116,7 +119,7 @@ int main(int argc, char** argv)
 
     
     Chip8* chip8 = new Chip8(rom_name);
-    
+ 
     //Print out ROM
     printf("Printing ROM.... \n");
     chip8->printRom();
@@ -133,7 +136,6 @@ int main(int argc, char** argv)
     //initialize sound object
     initSound();
     bool soundOn = false;   
-    
 
     std::clock_t start;
     double duration;
@@ -157,8 +159,6 @@ int main(int argc, char** argv)
                 printf("Sound Off! \n");
                 soundOn = false;
             }
-
-
             while(true){
                 duration=( std::clock() - start ) / (double) CLOCKS_PER_SEC;
                 if(duration > 1/(clockSpeed)){

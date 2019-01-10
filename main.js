@@ -10,8 +10,13 @@ function main(){
     //var chip8 = new Module.Chip8("roms/games/Connect\ 4\ \[David\ Winter\].ch8");
     //var chip8 = new Module.Chip8("roms/games/Missile\ \[David\ Winter\].ch8");
     //var chip8 = new Module.Chip8("roms/games/Rush\ Hour\ \[Hap\,\ 2006\].ch8");
-    var chip8 = new Module.Chip8("roms/games/Space Invaders [David Winter].ch8");
-    
+    //var chip8 = new Module.Chip8("roms/games/Space Invaders [David Winter].ch8");
+    //var chip8 = new Module.Chip8("roms/games/Tetris\ \[Fran\ Dachille\,\ 1991\].ch8");
+    var chip8 = new Module.Chip8("roms/games/Breakout (Brix hack) [David Winter, 1997].ch8");
+    //chip8.printRom();
+    //chip8.loadROM("roms/games/Connect\ 4\ \[David\ Winter\].ch8");
+
+
     var canvas = document.getElementById('Chip8 Display');
     var slider = document.getElementById('slider');
     var speedOutput = document.getElementById('output');     
@@ -36,8 +41,14 @@ function main(){
     //Start main loop:
     requestAnimationFrame(mainLoop);
     //Start clock
-    setInterval(clockUpdate, clockTimeStep); 
+    var clockCallback = setInterval(clockUpdate, clockTimeStep); 
 
+    //Start Dropdown Listener:
+    var romsDropdown = document.getElementById('romsDropdown');
+    var romFileName = romsDropdown.value;
+    var loadNewRom = false;
+    romsDropdown.addEventListener('change', dropdownListener); 
+    
     function mainLoop(timestamp) {
         var delta = timestamp - lastTimestamp;
         //console.log("Loop! Delta: " + delta);
@@ -47,16 +58,19 @@ function main(){
             chip8.emulateCycle();
             emulateTimeRemaining -= timeStep;
         }
-        /*var clockTimeRemaining = delta;
-        while(clockTimeRemaining >= clockTimeStep){
-            chip8.tickClock();
-            clockTimeRemaining -= clockTimeStep;
-        }*/
         drawScreen(chip8, canvas);  
-        requestAnimationFrame(mainLoop);
         //Update timestep
         emulationSpeed = speedOutput.innerHTML;
         timeStep = (1/emulationSpeed)*1000;
+        //Load a new rom if dropdown changed
+        if(loadNewRom){
+            console.warn("Loading new ROM!");
+            chip8.loadROM(romFileName);
+            drawScreen(chip8, canvas);  
+            loadNewRom = false;
+        }
+        //Loop again 
+        requestAnimationFrame(mainLoop);
     }
     
     function clockUpdate(){
@@ -64,6 +78,12 @@ function main(){
         chip8.tickClock();
     }
     
+    function dropdownListener() {
+        //Load new ROM
+        console.warn("dropdown listener!");
+        romFileName = this.value;
+        loadNewRom = true;
+    }
     function keyListener(isKeyDown) {
         //Returns the correct key listener for keyup, keydown events,
         //depending on what is specified by isKeyDown,

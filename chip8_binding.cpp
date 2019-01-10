@@ -11,7 +11,7 @@ EMSCRIPTEN_BINDINGS(my_class_example) {
         .function("displayOnAt", &Chip8::displayOnAt)
         .function("emulateCycle", &Chip8::emulateCycle)
         .function("runInstruction", &Chip8::runInstruction)
-        .function("printRom", &Chip8::printRom)
+        .function("loadROM", &Chip8::loadROM)
         ;    
 }
 
