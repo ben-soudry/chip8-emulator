@@ -49,6 +49,9 @@ function main(){
     var loadNewRom = false;
     romsDropdown.addEventListener('change', dropdownListener); 
     
+    //Get audio:
+    var audio = document.getElementById("audio");
+ 
     function mainLoop(timestamp) {
         var delta = timestamp - lastTimestamp;
         //console.log("Loop! Delta: " + delta);
@@ -62,6 +65,14 @@ function main(){
         //Update timestep
         emulationSpeed = speedOutput.innerHTML;
         timeStep = (1/emulationSpeed)*1000;
+        
+        //Play audio 
+        if(chip8.isSoundOn()){
+            audio.play();
+        } else {
+            audio.pause();
+        }     
+
         //Load a new rom if dropdown changed
         if(loadNewRom){
             console.warn("Loading new ROM!");

@@ -97,12 +97,17 @@ select {
     <option value="roms/games/Tetris [Fran Dachille, 1991].ch8">TETRIS</option>
     <option value="roms/games/UFO [Lutz V, 1992].ch8">UFO</option>
     <option value="roms/games/Pong (1 player).ch8">PONG</option >
-
   </select>
 
    <div class="slidecontainer">
       <p>Emulation Speed: <span id="output"></span> Hz</p>
       <input type="range" min="10" max="80" value="45" id="slider" class="slider">
    </div>
+
+<audio id="audio">
+  <source src="beep440.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
 </body>
 </html>
