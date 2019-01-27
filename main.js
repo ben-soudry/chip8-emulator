@@ -175,7 +175,7 @@ function drawScreen(chip8, canvas){
         for(col = 0; col < displayWidth; col++){
             for(row = 0; row < displayHeight; row++){
                 if(chip8.displayOnAt(row, col)){
-                    ctx.fillStyle = 'rgb(0, 200, 0)';
+                    ctx.fillStyle = 'rgb(0, 255, 0)';
                 } else {
                     ctx.fillStyle = 'rgb(0, 0, 0)';
                 }
