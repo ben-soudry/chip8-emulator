@@ -17,6 +17,9 @@ int timer_ms = (int)((1/timerSpeed)*1000);
 sf::SoundBuffer Buffer;
 sf::Sound Sound;
 
+uint16_t pongPlayerScore = 0;
+uint16_t pongOpponentScore = 0;
+
 void updateDisplay(sf::RenderWindow& window, Chip8* chip8){
     window.clear();
 
@@ -73,7 +76,10 @@ void timerRegistersManager(Chip8* chip8)
 {
     while(true){
         chip8->tickClock();
-        printf("TICK! \n");
+        //chip8->printRegisters();
+
+        printf("Our Score: %d Their Score %d \n", pongPlayerScore, pongOpponentScore);
+        //printf("TICK! \n");
         std::this_thread::sleep_for(std::chrono::milliseconds(timer_ms));      
     } 
     
@@ -116,15 +122,8 @@ int main(int argc, char** argv)
     } 
     std::string rom_name(argv[1]);
     clockSpeed = atof(argv[2]);
-
     
     Chip8* chip8 = new Chip8(rom_name);
- 
-    //Print out ROM
-    printf("Printing ROM.... \n");
-    chip8->printRom();
-    printf("End of ROM print \n");
-
     //Create Display window with rom title
     char title[200];
     snprintf(title, 200, "Chip8: %s", rom_name.c_str());
@@ -159,6 +158,16 @@ int main(int argc, char** argv)
                 printf("Sound Off! \n");
                 soundOn = false;
             }
+            //Pong score capture code
+            if(chip8->PC == 0x2DC){
+                printf("Our Score Updated!");
+                pongPlayerScore = chip8->I / 5;
+            } 
+            if(chip8->PC == 0x2E6){
+                printf("Their Score Updated");
+                pongOpponentScore = chip8->I / 5;
+            }
+            
             while(true){
                 duration=( std::clock() - start ) / (double) CLOCKS_PER_SEC;
                 if(duration > 1/(clockSpeed)){

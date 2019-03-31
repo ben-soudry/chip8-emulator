@@ -84,7 +84,7 @@ void Chip8::emulateCycle(){
     uint8_t high_byte = memory[PC];
     uint8_t low_byte = memory[PC+1];
     uint16_t instr = ((uint16_t) high_byte << 8)  | (uint16_t) low_byte;
-    printf("0x%X ", PC); 
+    //printf("0x%X ", PC); 
     
     this->runInstruction(instr);
 } 
@@ -419,7 +419,20 @@ void Chip8::LDI2 (uint8_t Vx) {
     PC += 2;
 }
 
+void Chip8::printRegisters(){
+    printf("PC=%x ", PC); 
+    printf("I=%x ", I); 
+    printf("DT=%x ", DT);
+    printf("ST=%x ", ST);
+    for(int i = 0; i < 16; i++){
+        printf("V[%d]=%x ",i ,V[i]);
+    }
+    printf("\n");
+}
+
 void Chip8::runInstruction(uint16_t instr) {
+    //this->printRegisters();
+
     uint8_t word0 = (uint8_t)((instr >> 12) & 0xF);
     uint8_t word1 = (uint8_t)((instr >> 8) & 0xF);
     uint8_t word2 = (uint8_t)((instr >> 4) & 0xF);
@@ -429,84 +442,83 @@ void Chip8::runInstruction(uint16_t instr) {
     uint8_t kk = (uint8_t)(instr & 0xFF);
     uint8_t x = word1;
     uint8_t y = word2;
-    
 
     switch(word0) {
         case 0:
             if(instr == 0x00E0){
-                printf(" CLS \n");
+                //printf(" CLS \n");
                 this->CLS();
             } else if(instr == 0x00EE){
-                printf(" RET \n");
+                //printf(" RET \n");
                 this->RET();
             } else {
                 printf("\n");
             }
             break;
         case 1:
-            printf(" JP %X%X%X \n", word1, word2, word3);
+            //printf(" JP %X%X%X \n", word1, word2, word3);
             this->JP1(nnn);
             break;
         case 2:
-            printf(" CALL %X%X%X \n", word1, word2, word3); 
+            //printf(" CALL %X%X%X \n", word1, word2, word3); 
             this->CALL(nnn);
             break;
         case 3:
-            printf(" SE V%X, %X%X \n", word1, word2, word3);
+            //printf(" SE V%X, %X%X \n", word1, word2, word3);
             this->SE1(x, kk);
             break;
         case 4:
-            printf(" SNE V%X, %X%X \n", word1, word2, word3);
+            //printf(" SNE V%X, %X%X \n", word1, word2, word3);
             this->SNE1(x, kk);
             break;
         case 5:
-            printf(" SE V%X, V%X \n", word1, word2);
+            //printf(" SE V%X, V%X \n", word1, word2);
             this->SE2(x, y);
             break;
         case 6:
-            printf(" LD V%X,  %X%X \n", word1, word2, word3);
+            //printf(" LD V%X,  %X%X \n", word1, word2, word3);
             this->LD1(x, kk);
             break;
         case 7: 
-            printf( " ADD V%X, %X%X \n", word1, word2, word3);
+            //printf( " ADD V%X, %X%X \n", word1, word2, word3);
             this->ADD1(x, kk);
             break;
         case 8:
             switch(word3) {
                 case 0:
-                    printf( " LD V%X, V%X \n", word1, word2);
+                    //printf( " LD V%X, V%X \n", word1, word2);
                     this->LD2(x, y);
                     break;
                 case 1:
-                    printf( " OR V%X, V%X \n", word1, word2);
+                    //printf( " OR V%X, V%X \n", word1, word2);
                     this->OR(x, y);
                     break;
                 case 2:
-                    printf( " AND V%X, V%X \n", word1, word2);
+                    //printf( " AND V%X, V%X \n", word1, word2);
                     this->AND(x, y);
                     break;
                 case 3:
-                    printf( " XOR V%X, V%X \n", word1, word2);
+                    //printf( " XOR V%X, V%X \n", word1, word2);
                     this->XOR(x, y);
                     break;
                 case 4:
-                    printf( " ADD V%X, V%X \n", word1, word2);
+                    //printf( " ADD V%X, V%X \n", word1, word2);
                     this->ADD2(x, y);
                     break;
                 case 5:
-                    printf( " SUB V%X, V%X \n", word1, word2);
+                    //printf( " SUB V%X, V%X \n", word1, word2);
                     this->SUB(x, y);
                     break;
                 case 6:
-                    printf( " SHR V%X, { V%X } \n", word1, word2);
+                    //printf( " SHR V%X, { V%X } \n", word1, word2);
                     this->SHR(x);
                     break;
                 case 7:
-                    printf( " SUBN V%X, V%X \n", word1, word2);
+                    //printf( " SUBN V%X, V%X \n", word1, word2);
                     this->SUBN(x, y);
                     break;
                 case 0xE:
-                    printf( " SHL V%X, { V%X } \n", word1, word2);
+                    //printf( " SHL V%X, { V%X } \n", word1, word2);
                     this->SHL(x);
                     break;
                 default:
@@ -514,72 +526,72 @@ void Chip8::runInstruction(uint16_t instr) {
             }
             break;
         case 9:
-            printf(" SNE V%X, V%X, \n", word1, word2);
+            //printf(" SNE V%X, V%X, \n", word1, word2);
             this->SNE2(x, y);
             break;
         case 0xA:
-            printf(" LD I, %X%X%X \n", word1, word2, word3);
+            //printf(" LD I, %X%X%X \n", word1, word2, word3);
             this->LD3(nnn);
             break;
         case 0xB:
-            printf(" JP V0, %X%X%X \n", word1, word2, word3);
+            //printf(" JP V0, %X%X%X \n", word1, word2, word3);
             this->JP2(nnn);
             break;
         case 0xC:
-            printf(" RND V%X, %X%X \n", word1, word2, word3);
+            //printf(" RND V%X, %X%X \n", word1, word2, word3);
             this->RND(x, kk);
             break;
         case 0xD:
-            printf(" DRW V%X, V%X, %X \n", word1, word2, word3);
+            //printf(" DRW V%X, V%X, %X \n", word1, word2, word3);
             this->DRW(x, y, word3);
             break;
         case 0xE:
             if(word2 == 9 && word3 == 0xE){
-                printf(" SKP V%X \n", word1);
+                //printf(" SKP V%X \n", word1);
                 this->SKP(x);
             } else if(word2 == 0xA && word3 == 0x1){
-                printf(" SKNP V%X \n", word1);
+                //printf(" SKNP V%X \n", word1);
                 this->SKNP(x);
             } else {
-                printf(" %X \n", word0);
+                //printf(" %X \n", word0);
             }
             break;
         case 0xF:
             switch(kk){
                 case 0x07:
-                    printf(" LD V%X, DT \n", word1);
+                    //printf(" LD V%X, DT \n", word1);
                     this->LDDT(x); 
                     break;
                 case 0x0A:
-                    printf(" LD V%X, K \n", word1);
+                    //printf(" LD V%X, K \n", word1);
                     this->LDK(x);
                     break;
                 case 0x15:
-                    printf(" LD DT, V%X \n", word1);
+                    //printf(" LD DT, V%X \n", word1);
                     this->LDDT2(x);
                     break;
                 case 0x18:
-                    printf(" LD ST, V%X \n", word1);
+                    //printf(" LD ST, V%X \n", word1);
                     this->LDST(x);
                     break;
                 case 0x1E:
-                    printf(" ADD I, V%X \n", word1);
+                    //printf(" ADD I, V%X \n", word1);
                     this->ADDI(x);
                     break;
                 case 0x29:
-                    printf(" LD F, V%X \n", word1);
+                    //printf(" LD F, V%X \n", word1);
                     this->LDF(x);
                     break;
                 case 0x33:
-                    printf(" LD B, V%X \n", word1);
+                    //printf(" LD B, V%X \n", word1);
                     this->LDB(x);
                     break;
                 case 0x55:
-                    printf(" LD V%X, [I] \n", word1);
+                    //printf(" LD V%X, [I] \n", word1);
                     this->LDI1(x);
                     break;
                 case 0x65:
-                    printf(" LD [I], V%X \n", word1);
+                    //printf(" LD [I], V%X \n", word1);
                     this->LDI2(x);
                     break;
                 default:
@@ -587,7 +599,7 @@ void Chip8::runInstruction(uint16_t instr) {
             }
             break;
         default:
-            printf(" %X \n", word0);
+            //printf(" %X \n", word0);
             break;
     }
 }

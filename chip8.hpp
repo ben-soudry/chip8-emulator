@@ -44,10 +44,11 @@ public:
  
     void printRom();
     void printInstruction(uint16_t addr, uint16_t instr);
+    void printRegisters();
     void loadROM(std::string fileName);
        
     void clearDisplay();
- 
+     
     //Memory locations of digits 0-F
     static constexpr uint16_t digitLocations[16] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75};
     
