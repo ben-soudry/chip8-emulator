@@ -36,11 +36,13 @@ public:
     
     
     void updateDisplay();
-    void stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyclesPerClockTick); 
+    void stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyclesPerClockTick);
+    void stepGameFrame(std::array<bool,16> keyboardInput);
+    void resetGame(); 
 
 private:
-    uint16_t dispPlayerScore;
-    uint16_t dispOpponentScore;
+    uint16_t dispPlayerScore = 0;
+    uint16_t dispOpponentScore = 0;
 
 };
 

@@ -14,6 +14,67 @@ display(display), load(load), loadFile(loadFile)
     }  
 }
 
+void PongRL::stepGameFrame(std::array<bool,16> keyboardInput){
+    sf::Event event;
+    while (display && window->pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed){
+            window->close();
+            display = false;
+        }
+    }
+
+    chip8->setKey(0x1, keyboardInput[0]);
+    chip8->setKey(0x2, keyboardInput[1]);
+    chip8->setKey(0x3, keyboardInput[2]);
+    chip8->setKey(0xC, keyboardInput[3]);
+    chip8->setKey(0x4, keyboardInput[4]);
+    chip8->setKey(0x5, keyboardInput[5]);
+    chip8->setKey(0x6, keyboardInput[6]);
+    chip8->setKey(0xD, keyboardInput[7]);
+    chip8->setKey(0x7, keyboardInput[8]);
+    chip8->setKey(0x8, keyboardInput[9]);
+    chip8->setKey(0x9, keyboardInput[10]);
+    chip8->setKey(0xE, keyboardInput[11]);
+    chip8->setKey(0xA, keyboardInput[12]);
+    chip8->setKey(0x0, keyboardInput[13]);
+    chip8->setKey(0xB, keyboardInput[14]);
+    chip8->setKey(0xF, keyboardInput[15]);
+    int cycle = 0;
+    do {
+        chip8->emulateCycle();
+
+        chip8->tickClock();
+
+        //Pong score capture code
+        if(chip8->PC == 0x2DC){
+            //printf("Our Score Updated!");
+            uint16_t oldScore = dispPlayerScore;
+            dispPlayerScore  = chip8->I / 5;
+            if(oldScore != dispPlayerScore && oldScore >= 0 && oldScore < 10){
+                //printf("ours was: %d is: %d \n", oldScore, dispPlayerScore);
+                pongPlayerScore += 1;
+            }
+        } 
+        if(chip8->PC == 0x2E6){
+            //printf("Their Score Updated");
+            uint16_t oldScore = dispOpponentScore;
+            dispOpponentScore = chip8->I / 5;
+            if(oldScore != dispOpponentScore && oldScore >= 0 && oldScore < 10){
+                //printf("Theirs was: %d is: %d \n", oldScore, dispOpponentScore);
+                pongOpponentScore += 1;
+            }
+        }
+        cycle++;
+    } while(chip8->PC != 0x254);
+        
+    //printf("Num Cycles in Frame: %d \n", cycle);
+
+    if(display && chip8->draw_flag == 1){
+        updateDisplay();
+        chip8->draw_flag = 0;
+    }
+}
 
 void PongRL::stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyclesPerClockTick){
     sf::Event event;
@@ -57,7 +118,7 @@ void PongRL::stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyc
             uint16_t oldScore = dispPlayerScore;
             dispPlayerScore  = chip8->I / 5;
             if(oldScore != dispPlayerScore && oldScore >= 0 && oldScore < 10){
-                printf("ours was: %d is: %d \n", oldScore, dispPlayerScore);
+                //printf("ours was: %d is: %d \n", oldScore, dispPlayerScore);
                 pongPlayerScore += 1;
             }
         } 
@@ -66,7 +127,7 @@ void PongRL::stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyc
             uint16_t oldScore = dispOpponentScore;
             dispOpponentScore = chip8->I / 5;
             if(oldScore != dispOpponentScore && oldScore >= 0 && oldScore < 10){
-                printf("Theirs was: %d is: %d \n", oldScore, dispOpponentScore);
+                //printf("Theirs was: %d is: %d \n", oldScore, dispOpponentScore);
                 pongOpponentScore += 1;
             }
         }
@@ -100,4 +161,18 @@ void PongRL::updateDisplay(){
     window->display();
 }
 
+void::PongRL::resetGame(){
+   fileName = "roms/games/Pong\ \(1\ player\).ch8";
+
+   delete chip8;
+   this->chip8 = new Chip8(fileName);
+
+ 
+    pongPlayerScore = 0;
+    pongOpponentScore = 0;
+    
+    dispPlayerScore = 0;
+    dispOpponentScore = 0;
+
+}
 

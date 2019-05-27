@@ -67,7 +67,7 @@ void getKeyboardInput(sf::RenderWindow& window, Chip8* chip8){
     chip8->setKey(0xB, sf::Keyboard::isKeyPressed(sf::Keyboard::C));
     chip8->setKey(0xF, sf::Keyboard::isKeyPressed(sf::Keyboard::V));
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::T)){
-        chip8->loadROM("roms/games/Tetris\ \[Fran\ Dachille\,\ 1991\].ch8");
+        //chip8->loadROM("roms/games/Tetris\ \[Fran\ Dachille\,\ 1991\].ch8");
         updateDisplay(window, chip8);
     }
 }
@@ -78,7 +78,7 @@ void timerRegistersManager(Chip8* chip8)
         chip8->tickClock();
         //chip8->printRegisters();
 
-        printf("Our Score: %d Their Score %d \n", pongPlayerScore, pongOpponentScore);
+        //printf("Our Score: %d Their Score %d \n", pongPlayerScore, pongOpponentScore);
         //printf("TICK! \n");
         std::this_thread::sleep_for(std::chrono::milliseconds(timer_ms));      
     } 
@@ -160,11 +160,11 @@ int main(int argc, char** argv)
             }
             //Pong score capture code
             if(chip8->PC == 0x2DC){
-                printf("Our Score Updated!");
+                printf("Our Score Updated! \n");
                 pongPlayerScore = chip8->I / 5;
             } 
             if(chip8->PC == 0x2E6){
-                printf("Their Score Updated");
+                printf("Their Score Updated \n");
                 pongOpponentScore = chip8->I / 5;
             }
             

@@ -45,7 +45,8 @@ void Chip8::loadROM(std::string fileName){
     draw_flag = 1;
     //Set stack pointer to -1 (stack empty)
     stack_ptr = -1;
-    
+   
+    fclose(fp); 
     printf("c++: ROM Loaded! \n");
 }
 void Chip8::initRegisters(){
@@ -375,7 +376,7 @@ void Chip8::LDDT2(uint8_t Vx){
 void Chip8::LDST(uint8_t Vx){
     //Set Sound Timer to Vx - thread safe
     DT_ST_Mutex.lock();
-    printf("LDST: %d \n", V[Vx]);
+    //printf("LDST: %d \n", V[Vx]);
     ST = V[Vx];
     DT_ST_Mutex.unlock();
     PC += 2;
@@ -452,7 +453,7 @@ void Chip8::runInstruction(uint16_t instr) {
                 //printf(" RET \n");
                 this->RET();
             } else {
-                printf("\n");
+                //printf("\n");
             }
             break;
         case 1:
@@ -521,8 +522,8 @@ void Chip8::runInstruction(uint16_t instr) {
                     //printf( " SHL V%X, { V%X } \n", word1, word2);
                     this->SHL(x);
                     break;
-                default:
-                    printf(" %X \n", word0);
+                //default:
+                    //printf(" %X \n", word0);
             }
             break;
         case 9:
@@ -594,8 +595,8 @@ void Chip8::runInstruction(uint16_t instr) {
                     //printf(" LD [I], V%X \n", word1);
                     this->LDI2(x);
                     break;
-                default:
-                    printf(" %X \n", word0);
+                //default:
+                    //printf(" %X \n", word0);
             }
             break;
         default:
