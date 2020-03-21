@@ -1,3 +1,6 @@
+#ifndef NEURALNETWORK_H
+#define NEURALNETWORK_H
+
 #include "Eigen/Dense"
 #include "chip8.hpp"
 #include <string>
@@ -16,7 +19,7 @@ class NeuralNetwork
 public: 
   //Hyperparameters
   static const constexpr int inputSize = 64*32;
-  static const constexpr int numHiddenUnits = 400;
+  static const constexpr int numHiddenUnits = 800;
   static const constexpr int outputSize = 1;
 
   float learningRate; //1e-3
@@ -49,6 +52,14 @@ public:
         Eigen::Matrix<float, Eigen::Dynamic, outputSize> grads,
         Eigen::Matrix<float, Eigen::Dynamic, 1> rewards);
     
+
+  
+  void saveNetwork(std::string filename);   
+  void loadNetwork(std::string filename);
+  
+
+private: 
+
   void backprop_fast( 
         Eigen::Matrix<float, Eigen::Dynamic, inputSize> Xs,
         Eigen::Matrix<float, Eigen::Dynamic, numHiddenUnits> Hs,
@@ -60,12 +71,8 @@ public:
         Eigen::Matrix<float, Eigen::Dynamic, numHiddenUnits> Hs,
         Eigen::Matrix<float, Eigen::Dynamic, outputSize> grads,
         Eigen::Matrix<float, Eigen::Dynamic, 1> rewards);
-  
-  void saveNetwork(std::string filename);   
-  void loadNetwork(std::string filename);
-  
+ 
 
-private:
   static float sigmoid(float x); 
   static float relu(float x); 
 
@@ -79,6 +86,4 @@ private:
   std::normal_distribution<float> W2_normalDist;
 
 };
-
-
-
+#endif //NEURALNETWORK_H

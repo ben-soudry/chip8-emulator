@@ -13,14 +13,28 @@
 class PongRL
 {
 public:
-    Chip8* chip8;
+    Chip8* chip8; 
+    
+    uint32_t pongPlayerScore = 0; //make private
+    uint32_t pongOpponentScore = 0; //make private
 
+    PongRL(bool display);    
+    
+    
+    void updateDisplay();
+    void stepGameFrame(std::array<bool,16> keyboardInput);
+
+    void resetGame(); 
+
+private:
+    void applyKeyboardInput(std::array<bool,16> keyboardInput);
+
+    bool display;
+    bool load;
+    
     sf::RenderWindow* window;
     
     std::string fileName;
-    
-    uint32_t pongPlayerScore = 0;
-    uint32_t pongOpponentScore = 0;
 
     const int displayWidth = 640;
     const int displayHeight = 320;
@@ -29,21 +43,10 @@ public:
     int timer_ms = (int)((1/timerSpeed)*1000);
     sf::SoundBuffer Buffer;
     sf::Sound Sound;
-    bool display;
-    bool load;
-    std::string loadFile;
-    PongRL(bool display, bool load, std::string loadFile);    
-    
-    
-    void updateDisplay();
-    void stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyclesPerClockTick);
-    void stepGameFrame(std::array<bool,16> keyboardInput);
-    void resetGame(); 
 
-private:
+
     uint16_t dispPlayerScore = 0;
     uint16_t dispOpponentScore = 0;
-
 };
 
 

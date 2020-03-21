@@ -1,9 +1,8 @@
 #include "rl_pong.hpp"
 #include <stdio.h>
-PongRL::PongRL(bool display, bool load, std::string loadFile) : 
-display(display), load(load), loadFile(loadFile)
+PongRL::PongRL(bool display) : display(display)
 {
-    fileName = "roms/games/Pong\ \(1\ player\).ch8";
+    std::string romName = "roms/games/Pong\ \(1\ player\).ch8";
 
     this->chip8 = new Chip8(fileName);
 
@@ -23,23 +22,9 @@ void PongRL::stepGameFrame(std::array<bool,16> keyboardInput){
             display = false;
         }
     }
-
-    chip8->setKey(0x1, keyboardInput[0]);
-    chip8->setKey(0x2, keyboardInput[1]);
-    chip8->setKey(0x3, keyboardInput[2]);
-    chip8->setKey(0xC, keyboardInput[3]);
-    chip8->setKey(0x4, keyboardInput[4]);
-    chip8->setKey(0x5, keyboardInput[5]);
-    chip8->setKey(0x6, keyboardInput[6]);
-    chip8->setKey(0xD, keyboardInput[7]);
-    chip8->setKey(0x7, keyboardInput[8]);
-    chip8->setKey(0x8, keyboardInput[9]);
-    chip8->setKey(0x9, keyboardInput[10]);
-    chip8->setKey(0xE, keyboardInput[11]);
-    chip8->setKey(0xA, keyboardInput[12]);
-    chip8->setKey(0x0, keyboardInput[13]);
-    chip8->setKey(0xB, keyboardInput[14]);
-    chip8->setKey(0xF, keyboardInput[15]);
+    
+    applyKeyboardInput(keyboardInput);
+    
     int cycle = 0;
     do {
         chip8->emulateCycle();
@@ -76,69 +61,6 @@ void PongRL::stepGameFrame(std::array<bool,16> keyboardInput){
     }
 }
 
-void PongRL::stepGame(std::array<bool,16> keyboardInput, int cycleCount, int cyclesPerClockTick){
-    sf::Event event;
-    while (display && window->pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed){
-            window->close();
-            display = false;
-        }
-    }
-
-    chip8->setKey(0x1, keyboardInput[0]);
-    chip8->setKey(0x2, keyboardInput[1]);
-    chip8->setKey(0x3, keyboardInput[2]);
-    chip8->setKey(0xC, keyboardInput[3]);
-    chip8->setKey(0x4, keyboardInput[4]);
-    chip8->setKey(0x5, keyboardInput[5]);
-    chip8->setKey(0x6, keyboardInput[6]);
-    chip8->setKey(0xD, keyboardInput[7]);
-    chip8->setKey(0x7, keyboardInput[8]);
-    chip8->setKey(0x8, keyboardInput[9]);
-    chip8->setKey(0x9, keyboardInput[10]);
-    chip8->setKey(0xE, keyboardInput[11]);
-    chip8->setKey(0xA, keyboardInput[12]);
-    chip8->setKey(0x0, keyboardInput[13]);
-    chip8->setKey(0xB, keyboardInput[14]);
-    chip8->setKey(0xF, keyboardInput[15]);
-
-    int cycle = 0;
-    while(cycle < cycleCount){
-        //printf("cycle \n"); 
-        chip8->emulateCycle();
-
-        if((cycle % cyclesPerClockTick) == 0){
-            chip8->tickClock();
-
-        }
-        //Pong score capture code
-        if(chip8->PC == 0x2DC){
-            //printf("Our Score Updated!");
-            uint16_t oldScore = dispPlayerScore;
-            dispPlayerScore  = chip8->I / 5;
-            if(oldScore != dispPlayerScore && oldScore >= 0 && oldScore < 10){
-                //printf("ours was: %d is: %d \n", oldScore, dispPlayerScore);
-                pongPlayerScore += 1;
-            }
-        } 
-        if(chip8->PC == 0x2E6){
-            //printf("Their Score Updated");
-            uint16_t oldScore = dispOpponentScore;
-            dispOpponentScore = chip8->I / 5;
-            if(oldScore != dispOpponentScore && oldScore >= 0 && oldScore < 10){
-                //printf("Theirs was: %d is: %d \n", oldScore, dispOpponentScore);
-                pongOpponentScore += 1;
-            }
-        }
-        cycle++;
-    }
-    if(display && chip8->draw_flag == 1){
-        updateDisplay();
-        chip8->draw_flag = 0;
-    }
-}
-
 void PongRL::updateDisplay(){
     //printf("updating display \n");
 
@@ -161,7 +83,7 @@ void PongRL::updateDisplay(){
     window->display();
 }
 
-void::PongRL::resetGame(){
+void PongRL::resetGame(){
    fileName = "roms/games/Pong\ \(1\ player\).ch8";
 
    delete chip8;
@@ -176,3 +98,22 @@ void::PongRL::resetGame(){
 
 }
 
+
+void PongRL::applyKeyboardInput(std::array<bool,16> keyboardInput){
+    chip8->setKey(0x1, keyboardInput[0]);
+    chip8->setKey(0x2, keyboardInput[1]);
+    chip8->setKey(0x3, keyboardInput[2]);
+    chip8->setKey(0xC, keyboardInput[3]);
+    chip8->setKey(0x4, keyboardInput[4]);
+    chip8->setKey(0x5, keyboardInput[5]);
+    chip8->setKey(0x6, keyboardInput[6]);
+    chip8->setKey(0xD, keyboardInput[7]);
+    chip8->setKey(0x7, keyboardInput[8]);
+    chip8->setKey(0x8, keyboardInput[9]);
+    chip8->setKey(0x9, keyboardInput[10]);
+    chip8->setKey(0xE, keyboardInput[11]);
+    chip8->setKey(0xA, keyboardInput[12]);
+    chip8->setKey(0x0, keyboardInput[13]);
+    chip8->setKey(0xB, keyboardInput[14]);
+    chip8->setKey(0xF, keyboardInput[15]);
+}

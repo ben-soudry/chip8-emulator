@@ -9,59 +9,41 @@
 
 //Hyperparameters
 const constexpr int maxGameScore = 9;
-const constexpr int episodesPerSave = 100;
-const constexpr int episodesPerSlowdown = 100;
+const constexpr int episodesPerSave = 500;
+const constexpr int episodesPerSlowdown = 500;
 
 int main(int argc, char** argv)
 {
-    NeuralNetwork neuralNetwork;
+     NeuralNetwork neuralNetwork;
 
     //neuralNetwork.saveNetwork("init.nn");
 
-    //neuralNetwork.loadNetwork("init.nn");
+    neuralNetwork.loadNetwork("net_800_ep24000.nn");
 
     std::ofstream logFile;
-    logFile.open("net_1e-3.csv");
+    logFile.open("net_800.csv", std::fstream::app);
     
-
     bool display = false;
-    bool load = false;
-    std::string loadFile = "";
     bool badArgs = false;
 
     if(argc > 1 && strncmp(argv[1], "-d", 2) == 0){
         display = true;
-        if(argc > 2 && argv[2] == "-l"){
-            if(argc == 4){
-                loadFile = std::string(argv[3]);
-            } else {
-                badArgs = true;
-            }
-        }
-    
-    } else if(argc > 1 && strncmp(argv[1], "-l", 2) == 0){ 
-        if(argc == 3){
-            loadFile = std::string(argv[2]);
-        } else {
-            badArgs = true;
-        }
     } else if(argc > 1){
         badArgs = true;
     }
     
-
     if(badArgs){
-        printf("Usage ./rl_pong {-d} {-l loadFile} \n");
-        return 0;
+        printf("Usage ./rl_pong {-d} \n");
+        return -1;
     } 
-    PongRL pongRL(display, load, loadFile); 
+    PongRL pongRL(display); 
    
     std::clock_t start;
     double duration;
         
-    int episodeNumber = 0;
-    float averagePerformance = 0.0;         
-    float averageFrames = 0.0;         
+    int episodeNumber = 0; //24000;
+    float averagePerformance = 0.0; //-1.57204;         
+    float averageFrames = 0.0; //1566.81;         
 
     while(true){             
         //Start new episode     
@@ -78,11 +60,7 @@ int main(int argc, char** argv)
         int prevPlayerScore = 0;    
         int prevOpponentScore = 0;
         int currFrame = 0;
-        /*if(episodeNumber % 1000 == 0){
-            std::cout << "W1: " << neuralNetwork.W1;
-            std::cout << "W2: " << neuralNetwork.W2;
-        }*/
-
+   
         //Run an episode
         while(pongRL.pongPlayerScore < maxGameScore && pongRL.pongOpponentScore < maxGameScore){
             start = std::clock();
@@ -183,8 +161,8 @@ int main(int argc, char** argv)
         /*std::cout << "Discounted Episode Rewards: ";
         for(std::vector<float>::iterator it = rewards.begin(); it != rewards.end(); ++it){
             std::cout << *it << ","; 
-        }*/
-        std::cout << std::endl;
+        }
+        std::cout << std::endl;*/
 
         averagePerformance = (((float) episodeNumber)*averagePerformance + currPerformance)/((float)(episodeNumber + 1));
         
@@ -198,14 +176,13 @@ int main(int argc, char** argv)
         logFile << episodeNumber << ", " << averagePerformance << ", " << averageFrames << std::endl;
 
         if(episodeNumber % episodesPerSave == 0){
-            neuralNetwork.saveNetwork("net_1e-3_ep" + std::to_string(episodeNumber) + ".nn"); 
+            neuralNetwork.saveNetwork("net_800_ep" + std::to_string(episodeNumber) + ".nn"); 
         }
 
         episodeNumber += 1;
  
         //Backprop step:
         neuralNetwork.backprop(Xs, Hs, grads, rewards); 
-        
     }
 }
     
