@@ -32,7 +32,6 @@ public:
  
   NeuralNetwork();
   void initializeWeights();
-  void feedForwardDisplay(bool display);
   void displayFeedforward(Chip8& chip8, Eigen::Matrix<float, outputSize,1>* output,
                           Eigen::Matrix<float, inputSize,1>* networkInput,
                           Eigen::Matrix<float, numHiddenUnits, 1>* hiddenState);
